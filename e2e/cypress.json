@@ -1,4 +1,5 @@
 {
+    "baseUrl":"https://localhost",
     "reporter":"junit",
     "reporterOptions":{
         "mochaFile":"results/TEST-[hash].xml"
