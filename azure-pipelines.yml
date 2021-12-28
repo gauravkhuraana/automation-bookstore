@@ -47,7 +47,7 @@ stages:
             Browser: chrome
            Firefox:
             Browser: firefox
-           maxParallel: 2  
+          maxParallel: 2  
         pool:
           vmImage: ubuntu-latest
         steps:
