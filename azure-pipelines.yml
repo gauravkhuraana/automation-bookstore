@@ -34,7 +34,7 @@ stages:
         - task: AzureRmWebAppDeployment@4
           inputs:
             ConnectionType: 'AzureRM'
-            azureSubscription: 'Visual Studio Enterprise (f6460da5-616f-4db7-a22b-422063390636)'
+            azureSubscription: 'multi stage'
             appType: 'webApp'
             WebAppName: 'staticwebappautomationbookstore'
             packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
