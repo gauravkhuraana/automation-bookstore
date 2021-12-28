@@ -35,6 +35,7 @@
                           }
                 }
               fileoverwrite: true
+          - script: 'npm install @applitools/eyes-cypress'       
           - script: 'npm run test -- --browser $(Browser) --headless'       
             workingDirectory: '$(System.DefaultWorkingDirectory)/abs/e2e'
             displayName: 'Run Tests'
