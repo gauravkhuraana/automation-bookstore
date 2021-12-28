@@ -1,0 +1,66 @@
+   parameters:
+   - name: url 
+
+   steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current' 
+              downloadType: 'single'
+              artifactName: 'drop'
+              downloadPath: '$(System.DefaultworkingDirectory)'
+          - task: ExtractFiles@1
+            displayName: 'Extract Files' 
+            inputs:
+              destinationFolder: '$(System.DefaultWorkingDirectory)/abs' 
+          - task: NodeTool@0
+            displayName: 'Use Node 16.x'   
+            inputs:
+              versionSpec: '16.x'
+          - task: Npm@1
+            displayName: 'Install Dependencies'      
+            inputs:
+              command: ci
+              workingDir: '$(System.DefaultWorkingDirectory)/abs/e2e'
+              verbose: false
+          - task: file-creator@6
+            displayName: 'Update Configurations'
+            inputs:
+              filepath: '$(System.DefaultWorkingDirectory)/abs/e2e/cypress.json'
+              filecontent: |
+                {
+                          "baseUrl" :"${{parameters.url}}",
+                          "reporter": "junit",
+                          "reporterOptions": {
+                          "mochaFile":"results/Test-[hash].xml]"
+                          }
+                }
+              fileoverwrite: true
+          - script: 'npm run test -- --browser $(Browser) --headless'       
+            workingDirectory: '$(System.DefaultWorkingDirectory)/abs/e2e'
+            displayName: 'Run Tests'
+            env:
+              APPLITOOLS_API_KEY: $(Applitools_API_Key)
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'    
+            inputs:
+              searchFolder: '$(System.DefaultWorkingDirectory)/abs/e2e/results'
+              failTaskOnFailedTests: true
+              testRunTitle: 'End to End Tests - $(Browser)'
+            condition: succeededOrFailed()
+          - task: PowerShell@2
+            displayName: 'Download Artifacts'
+            inputs:
+              targetType: 'inline'
+              script: |
+                 Compress-Archive -Path "$(System.DefaultWorkingDirectory)/abs/e2e/cypress/videos" -DestinationPath "$(System.DefaultWorkingDirectory)/abs/e2e/cypress/videos" -Force
+                 Write-Host "##vso[task.uploadfile]$(System.DefaultWorkingDirectory)/abs/e2e/cypress/videos.zip"
+
+            condition: succeededOrFailed()  
+
+
+
+
+                  
+
+
+
